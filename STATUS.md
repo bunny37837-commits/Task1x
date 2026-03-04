@@ -1,71 +1,40 @@
 # STATUS.md — Project Progress Tracker
-# 👤 Human readable. Codex updates after every milestone.
 
----
+Current Milestone: V1
+Completed: Flutter/Dart rewrite is in place and conflict-prone files were normalized to a clean merge-ready baseline.
+Verification: Conflict marker scan passed; wrapper missing-jar failure diagnosed with explicit recovery command; Flutter commands remain blocked because Flutter SDK is unavailable in this environment.
+Next Step: Run `flutter pub get`, `flutter analyze`, `flutter test`, and Android device verification for overlay/alarm behavior.
 
 ## Current State
 ```
-Milestone:    Not Started
-Phase:        —
-Last Updated: —
+Milestone:    V1 Implemented (merge conflicts resolved)
+Phase:        Verification blocked by environment
+Last Updated: 2026-03-04
 ```
-
----
-
-## Overall Progress
-```
-V1: [ ] Not Started  [ ] In Progress  [ ] Complete
-V2: [ ] Not Started  [ ] In Progress  [ ] Complete
-V3: [ ] Not Started  [ ] In Progress  [ ] Complete
-```
-
----
 
 ## Latest Update
+- Resolved branch conflict set for `.codex/skills/project/SKILL.md`, `.gitignore`, `DECISIONS.md`, `PLANS.md`, `README.md`, and `STATUS.md`.
+- Added explicit merge-safe conventions (`.gitignore` wrapper jar ignore + conflict marker check in `SKILL.md`).
+- Preserved offline Flutter app direction and prior architecture decisions.
+- Documented Gradle wrapper missing-JAR recovery command and validated regeneration path.
 
-### What Was Done
-[Codex fills after each milestone]
-
-### Verification Result
+## Verification Result
 ```
-Build:  [ ] Pass  [ ] Fail
-Tests:  [ ] Pass  [ ] Fail  [ ] N/A
-Output: [ ] Runnable  [ ] Not runnable
+Build:  [ ] Pass  [x] Fail (env limitation: Flutter missing)
+Tests:  [ ] Pass  [x] Fail (env limitation: Flutter missing)
+Output: [x] Runnable design present  [ ] Device-verified runnable
 ```
-
-### Next Step
-[Codex fills — exact next action]
-
----
-
-## History Log
-| # | Milestone | What Done | Build | Date |
-|---|-----------|-----------|-------|------|
-| 1 | [Codex fills] | [Codex fills] | ✅/❌ | [date] |
-
----
 
 ## Active Assumptions
-[Codex logs any assumptions made during build]
+ASSUMPTION: `android_alarm_manager_plus` + `flutter_overlay_window` package integration will satisfy overlay trigger behavior on supported Android devices.
+Reason: Flutter-only requirement with background trigger + overlay expectation.
+Impact: Requires Android manifest/permission alignment in final platform shell.
+Reversible: yes
 
-| # | Assumption | Reason | Reversible |
-|---|-----------|--------|------------|
-| 1 | [Codex fills] | [reason] | Yes/No |
-
----
+ASSUMPTION: Done action disables the task instead of deleting it.
+Reason: Preserves task history while preventing further alarms.
+Impact: Users can re-enable the task later.
+Reversible: yes
 
 ## Active Blockers
-[Codex logs anything waiting on human input]
-
-| # | Blocker | Options Given | Status |
-|---|---------|--------------|--------|
-| 1 | [Codex fills] | A/B/C | Waiting |
-
----
-
-## Known Issues
-[Non-critical issues discovered during build]
-
-| # | Issue | Severity | Workaround |
-|---|-------|----------|------------|
-| 1 | [Codex fills] | Low/Med/High | [Codex fills] |
+- Flutter SDK is not installed in this execution environment (`flutter` command unavailable).

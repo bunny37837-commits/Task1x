@@ -1,75 +1,72 @@
 # DECISIONS.md — Technical Decisions Log
-# ⚙️ Codex updates this. Every major decision must be recorded here with reasoning.
 
----
-
-## Decision Log Format
-Each entry must follow this format:
-
-```
-## [DEC-001] Decision Title
-Date: YYYY-MM-DD
-Status: Decided / Reconsidered / Superseded
-
-Decision: [What was decided]
-Reason:   [Why this choice]
-Rejected: [What was NOT chosen and why]
-Impact:   [What this affects]
-```
-
----
-
-## [DEC-001] Architecture Pattern
-Date: [Codex fills]
+## [DEC-001] Framework Choice
+Date: 2026-03-04
 Status: Decided
 
-Decision: [e.g., MVVM with Repository pattern]
-Reason:   [Codex fills]
-Rejected: [Codex fills]
-Impact:   [Codex fills]
+Decision: Flutter + Dart only.
+Reason: User explicitly requested Flutter project and disallowed Kotlin/Java/Compose/Room.
+Rejected: Native Android Kotlin stack.
+Impact: Entire implementation moved to `pubspec.yaml` + `lib/` Dart code.
 
----
-
-## [DEC-002] Database / Storage
-Date: [Codex fills]
+## [DEC-002] Local Storage
+Date: 2026-03-04
 Status: Decided
 
-Decision: [e.g., Room / SQLite / Firebase]
-Reason:   [Codex fills]
-Rejected: [Codex fills]
-Impact:   [Codex fills]
+Decision: `sqflite` for tasks, `shared_preferences` for settings.
+Reason: Offline persistence for structured tasks plus simple key/value settings.
+Rejected: Backend/cloud storage.
+Impact: Fully offline data model.
 
----
-
-## [DEC-003] Key Libraries / Dependencies
-Date: [Codex fills]
+## [DEC-003] Reminder Trigger
+Date: 2026-03-04
 Status: Decided
 
-Decision: [Codex fills]
-Reason:   [Codex fills]
-Impact:   [Codex fills]
+Decision: `android_alarm_manager_plus` callback schedules daily alarms per task.
+Reason: Needed Android background trigger path in Flutter.
+Rejected: Polling timers in app runtime.
+Impact: Reminder callback can run when UI is not foreground.
 
----
-
-## [DEC-004] Network Access
-Date: [Codex fills]
-Status: [Decided / Not Required]
-
-Decision: [Network OFF / ON with reason]
-Allowed Domains: [if enabled]
-Reason:   [Codex fills]
-
----
-
-## [DEC-005] Security Approach
-Date: [Codex fills]
+## [DEC-004] Overlay Strategy
+Date: 2026-03-04
 Status: Decided
 
-Decision: [Codex fills]
-Reason:   [Codex fills]
-Impact:   [Codex fills]
+Decision: `flutter_overlay_window` with dedicated overlay entrypoint screen.
+Reason: Closest Flutter-only approach to floating popup behavior.
+Rejected: In-app dialog only.
+Impact: Overlay permissions are required at runtime and OEM behavior must be device-tested.
 
----
+## [DEC-005] Network Access
+Date: 2026-03-04
+Status: Not Required
 
-## Future Decisions
-[Codex adds new entries here as project progresses]
+Decision: Network OFF for app runtime.
+Allowed Domains: None.
+Reason: SPEC requires 100% offline app.
+
+## [DEC-006] Wrapper Binary Handling for PR Compatibility
+Date: 2026-03-04
+Status: Decided
+
+Decision: Do not commit `gradle/wrapper/gradle-wrapper.jar`; keep wrapper properties/scripts and document local regeneration.
+Reason: Upstream PR tooling reports "binary files are not supported" and blocks smooth merge/review.
+Rejected: Keeping the JAR committed (continues PR binary failure).
+Impact: Contributors regenerate wrapper jar locally when needed using `gradle wrapper --gradle-version 8.12 --no-validate-url`.
+
+## [DEC-007] Conflict-Safe Documentation Baseline
+Date: 2026-03-04
+Status: Decided
+
+Decision: Standardize key project files (`SKILL.md`, `.gitignore`, `PLANS.md`, `DECISIONS.md`, `README.md`, `STATUS.md`) into clean conflict-free baseline content.
+Reason: Branch merge requested with conflicts on these files; stable canonical text reduces repeated merge churn.
+Rejected: Leaving per-branch divergent wording.
+Impact: Future merges are simpler and automated conflict-marker checks are part of workflow.
+
+## [DEC-008] Wrapper Recovery Workflow
+Date: 2026-03-04
+Status: Decided
+
+Decision: Standardize wrapper recovery command in docs/status: `gradle wrapper --gradle-version 8.12 --no-validate-url`.
+Reason: Repository intentionally excludes `gradle-wrapper.jar`; users need a clear regeneration path when wrapper JAR is absent.
+Rejected: Leaving recovery as implicit tribal knowledge.
+Impact: Faster troubleshooting when `./gradlew` reports missing wrapper JAR.
