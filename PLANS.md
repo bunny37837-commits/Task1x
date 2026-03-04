@@ -2,7 +2,7 @@
 
 ## Status
 - [ ] Not Started
-- [x] In Progress — Current: V1 (Flutter rewrite)
+- [x] In Progress — Current: V1 (Flutter rewrite stabilization)
 - [ ] Complete
 
 ## V1 — Core Working Feature
@@ -15,12 +15,14 @@ Deliver Flutter Android app with offline task CRUD, daily reminder scheduling, a
 - [x] Task create/edit/delete with daily time.
 - [x] Global toggle + dark mode persisted.
 - [x] Reminder callback attempts overlay with Done/Snooze/Dismiss + 12s countdown UI.
+- [x] Conflict-prone project docs normalized for clean merges.
 
 ### Tasks
 - [x] Remove Kotlin/Room/Compose implementation.
 - [x] Add Flutter dependencies and app scaffold.
 - [x] Implement offline storage + settings persistence.
 - [x] Implement reminder scheduling and overlay entry flow.
+- [x] Resolve branch conflicts in documentation/workflow files.
 
 ## V2 — Complete Feature Set
 

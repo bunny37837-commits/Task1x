@@ -25,5 +25,11 @@ flutter run -d android
 
 ## Test
 ```bash
+flutter analyze
 flutter test
 ```
+
+## Merge/CI notes
+- `gradle/wrapper/gradle-wrapper.jar` is intentionally not tracked to avoid binary PR failures.
+- Regenerate the wrapper JAR locally with:
+  - `gradle wrapper --gradle-version 8.12 --no-validate-url`

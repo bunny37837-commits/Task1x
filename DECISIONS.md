@@ -44,7 +44,6 @@ Decision: Network OFF for app runtime.
 Allowed Domains: None.
 Reason: SPEC requires 100% offline app.
 
-
 ## [DEC-006] Wrapper Binary Handling for PR Compatibility
 Date: 2026-03-04
 Status: Decided
@@ -53,3 +52,12 @@ Decision: Do not commit `gradle/wrapper/gradle-wrapper.jar`; keep wrapper proper
 Reason: Upstream PR tooling reports "binary files are not supported" and blocks smooth merge/review.
 Rejected: Keeping the JAR committed (continues PR binary failure).
 Impact: Contributors regenerate wrapper jar locally when needed using `gradle wrapper --gradle-version 8.12 --no-validate-url`.
+
+## [DEC-007] Conflict-Safe Documentation Baseline
+Date: 2026-03-04
+Status: Decided
+
+Decision: Standardize key project files (`SKILL.md`, `.gitignore`, `PLANS.md`, `DECISIONS.md`, `README.md`, `STATUS.md`) into clean conflict-free baseline content.
+Reason: Branch merge requested with conflicts on these files; stable canonical text reduces repeated merge churn.
+Rejected: Leaving per-branch divergent wording.
+Impact: Future merges are simpler and automated conflict-marker checks are part of workflow.

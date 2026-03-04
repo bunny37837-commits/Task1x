@@ -4,3 +4,9 @@
 build/
 .flutter-plugins
 .flutter-plugins-dependencies
+
+# Keep wrapper binary out of VCS to avoid binary PR blocker
+gradle/wrapper/gradle-wrapper.jar
+
+# Merge leftovers
+*.orig
