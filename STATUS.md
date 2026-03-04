@@ -1,71 +1,19 @@
 # STATUS.md — Project Progress Tracker
-# 👤 Human readable. Codex updates after every milestone.
 
----
+Current Milestone: V1
+Completed: Added and audited GitHub Actions CI workflow for browser-only usage with Java/Gradle best practices and Flutter verification pipeline.
+Verification: Workflow logic validated locally by running `flutter pub get`, `flutter analyze`, `flutter test`, and `flutter build apk --debug`; all passed.
+Next Step: Run the new GitHub Actions workflow on PR/push and begin V2 real-device verification matrix.
 
 ## Current State
 ```
-Milestone:    Not Started
-Phase:        —
-Last Updated: —
+Milestone:    V1 complete (CI audit + debug APK verification)
+Phase:        V2 device hardening/verification
+Last Updated: 2026-03-04
 ```
-
----
-
-## Overall Progress
-```
-V1: [ ] Not Started  [ ] In Progress  [ ] Complete
-V2: [ ] Not Started  [ ] In Progress  [ ] Complete
-V3: [ ] Not Started  [ ] In Progress  [ ] Complete
-```
-
----
-
-## Latest Update
-
-### What Was Done
-[Codex fills after each milestone]
-
-### Verification Result
-```
-Build:  [ ] Pass  [ ] Fail
-Tests:  [ ] Pass  [ ] Fail  [ ] N/A
-Output: [ ] Runnable  [ ] Not runnable
-```
-
-### Next Step
-[Codex fills — exact next action]
-
----
-
-## History Log
-| # | Milestone | What Done | Build | Date |
-|---|-----------|-----------|-------|------|
-| 1 | [Codex fills] | [Codex fills] | ✅/❌ | [date] |
-
----
 
 ## Active Assumptions
-[Codex logs any assumptions made during build]
-
-| # | Assumption | Reason | Reversible |
-|---|-----------|--------|------------|
-| 1 | [Codex fills] | [reason] | Yes/No |
-
----
-
-## Active Blockers
-[Codex logs anything waiting on human input]
-
-| # | Blocker | Options Given | Status |
-|---|---------|--------------|--------|
-| 1 | [Codex fills] | A/B/C | Waiting |
-
----
-
-## Known Issues
-[Non-critical issues discovered during build]
-
-| # | Issue | Severity | Workaround |
-|---|-------|----------|------------|
-| 1 | [Codex fills] | Low/Med/High | [Codex fills] |
+ASSUMPTION: GitHub-hosted Ubuntu runners provide Android cmdline-tools at `$ANDROID_HOME/cmdline-tools/latest`.
+Reason: The CI workflow installs SDK packages using `sdkmanager` in that standard location.
+Impact: If runner image layout changes, CI would need path adjustment.
+Reversible: yes
