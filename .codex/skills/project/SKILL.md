@@ -1,23 +1,22 @@
-# Project Skill — TaskRemind Pro (Flutter)
+# Project Skill — TaskRemind Pro
 
 ## Build commands
-- `flutter pub get`
-- `flutter analyze`
-- `flutter test`
+- `./gradlew :app:assembleDebug`
+- `./gradlew test`
 
 ## Repo workflow
-1. Re-read `SPEC.md`, `PLANS.md`, `DECISIONS.md`, and `STATUS.md`.
+1. Read `SPEC.md`, `PLANS.md`, `DECISIONS.md`, and `STATUS.md`.
 2. Implement one milestone at a time.
-3. Before committing, verify no conflict markers exist: `rg -n "^(<<<<<<<|=======|>>>>>>>)"`.
-4. Run analyze + tests when Flutter SDK is available.
-5. Update docs and status files.
+3. Run build + tests before closing milestone.
+4. Update `STATUS.md` and `DECISIONS.md` with evidence.
 
 ## Verification steps
-- Static analysis passes.
-- Tests pass.
-- Android run validates reminder + overlay behavior.
+- Build debug APK.
+- Run unit tests.
+- Verify app is installable and starts.
 
-## Conventions
-- Dart + Flutter only.
-- Keep logic in pure Dart classes and state layer.
-- Offline-only persistence.
+## Project conventions
+- Kotlin + Jetpack Compose.
+- Room for local persistence.
+- AlarmManager + WorkManager for reminder flow.
+- Foreground overlay service for reminder popups.

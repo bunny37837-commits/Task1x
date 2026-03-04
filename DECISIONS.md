@@ -1,69 +1,52 @@
 # DECISIONS.md — Technical Decisions Log
 
-## [DEC-001] Framework Choice
+## [DEC-001] Architecture Pattern
 Date: 2026-03-04
 Status: Decided
 
-Decision: Flutter + Dart only.
-Reason: User explicitly requested Flutter project and disallowed Kotlin/Java/Compose/Room.
-Impact: Entire implementation is in Flutter Dart app + generated Flutter Android shell.
+Decision: MVVM-style single-activity Compose app with repository layer.
+Reason: Keeps state handling simple while separating UI from persistence/scheduling concerns.
+Rejected: Multi-module architecture (too heavy for V1 scope).
+Impact: ViewModel coordinates Room data and scheduler actions.
 
-## [DEC-002] Local Persistence
+## [DEC-002] Database / Storage
 Date: 2026-03-04
 Status: Decided
 
-Decision: `sqflite` for tasks and `shared_preferences` for global settings + overlay payload cache.
-Reason: Offline-first persistence with no backend.
-Impact: App remains fully local and network-independent at runtime.
+Decision: Room database with `TaskEntity` and singleton `SettingsEntity`.
+Reason: Reliable local offline persistence, typed schema, coroutine Flow support.
+Rejected: SharedPreferences-only storage (weak schema, less suitable for list CRUD).
+Impact: App state survives process death and reboot scheduling can query all tasks.
 
-## [DEC-003] Reminder + Overlay Triggering
+## [DEC-003] Key Libraries / Dependencies
 Date: 2026-03-04
 Status: Decided
 
-Decision: `android_alarm_manager_plus` one-shot exact alarms per task and `flutter_overlay_window` for floating full-screen overlay UI.
-Reason: Closest Flutter-native approach to “incoming-call style” reminder behavior.
-Impact: Requires Android overlay/alarm/foreground permissions and device validation.
+Decision: Jetpack Compose, Room, WorkManager, Coroutines.
+Reason: Native Android stack, stable support for offline local workflows.
+Impact: Modern UI and lifecycle-safe background execution.
 
-## [DEC-004] Android SDK Compilation Level
+## [DEC-004] Network Access
+Date: 2026-03-04
+Status: Not Required
+
+Decision: Network OFF.
+Allowed Domains: None.
+Reason: SPEC requires 100% offline operation and no backend/cloud.
+
+## [DEC-005] Security Approach
 Date: 2026-03-04
 Status: Decided
 
-Decision: Compile SDK set to 36; target SDK remains 34 per specification; min SDK 26.
-Reason: Current Flutter plugin versions (`shared_preferences_android`, `sqflite_android`) require compile SDK 36.
-Impact: Keeps spec-compatible runtime target while satisfying build requirements.
+Decision: Minimal-permission design with only Android reminder/overlay permissions from SPEC, and no credential handling.
+Reason: App has no login/backend and should avoid collecting sensitive data.
+Impact: Reduced attack surface and full offline behavior.
 
-## [DEC-005] Temporary Network Enablement for Toolchain Setup
+## [DEC-006] Reminder Trigger Pipeline
 Date: 2026-03-04
 Status: Decided
 
-Decision: Enable network only for build-tool bootstrap (Flutter SDK + Android SDK components).
-Allowed Domains: `github.com`, `storage.googleapis.com`, `dl.google.com`, `archive.ubuntu.com`, `security.ubuntu.com`, `apt.llvm.org`, `mise.jdx.dev`.
-Reason: Required to produce requested APK artifact in this environment.
-Impact: Build tooling installed locally; app runtime remains fully offline.
-
-
-## [DEC-006] Startup Bootstrap Reliability
-Date: 2026-03-04
-Status: Decided
-
-Decision: Initialize alarm manager/database/settings behind a bootstrap widget with loading and explicit error/retry UI.
-Reason: Direct pre-runApp initialization could leave a black launch screen when startup initialization fails or stalls.
-Impact: App now always renders a visible state at startup and provides retry recovery.
-
-
-## [DEC-007] Binary-Free Android Resource Policy
-Date: 2026-03-04
-Status: Decided
-
-Decision: Remove committed PNG launcher assets and use Android system icon reference in manifest.
-Reason: Branch update/PR tooling rejects binary files, blocking merges.
-Impact: Repository stays text-only for smoother PR updates; app uses default system icon unless non-binary icon pipeline is added later.
-
-
-## [DEC-008] GitHub Actions CI Baseline
-Date: 2026-03-04
-Status: Decided
-
-Decision: Standardize CI on `actions/setup-java@v4` (Temurin 17) + `gradle/actions/setup-gradle@v5` and run `flutter pub get`, `flutter analyze`, `flutter test`, `flutter build apk --debug`.
-Reason: User requires browser-only GitHub workflow that is stable and Android-compatible.
-Impact: PRs and pushes now receive consistent automated verification and a downloadable debug APK artifact.
+Decision: AlarmManager exact alarm per task -> BroadcastReceiver -> OneTimeWorkRequest -> foreground OverlayService.
+Reason: Matches requirement for exact daily timing while using worker execution handoff and service-based overlay rendering.
+Rejected: Notification-tap dependent flow (does not satisfy auto popup requirement).
+Impact: Reminder overlay can fire when app UI is closed.
