@@ -1,118 +1,40 @@
-# SPEC.md — Project Specification
-# ⭐ Fill this yourself. Codex reads this to understand what to build.
-
----
-
-## App Name
-[Your app name here]
-
----
-
-## Goal
-[What problem does this app solve? — 2 lines max]
-
----
-
-## Platform
-[ ] Android
-[ ] Web
-[ ] iOS
-[ ] Cross-platform (specify): ___________
-
----
-
-## Core Features
-- [ ] Feature 1: [description]
-- [ ] Feature 2: [description]
-- [ ] Feature 3: [description]
-- [ ] Feature 4: [description]
-
----
-
-## Login / Auth
-[ ] None
-[ ] Email + Password
-[ ] Google Sign-In
-[ ] OTP (Phone)
-[ ] Other: ___________
-
----
-
-## External Services
-[ ] None
-[ ] Firebase (Firestore / Auth / Storage)
-[ ] Payment Gateway: ___________
-[ ] Maps: ___________
-[ ] Other: ___________
-
----
-
-## Data Storage
-[ ] Local only (no backend)
-[ ] Firebase
-[ ] Custom backend: ___________
-[ ] Other: ___________
-
----
-
-## Network Access Required?
-[ ] No
-[ ] Yes — Reason: ___________
-      Allowed Domains: ___________
-
----
-
-## Done Means
-> The app is DONE when a user can successfully:
-[Write one clear sentence here — e.g., "create a task, mark it complete, and see it saved after restart"]
-
----
-
-## Known Constraints
-[Any technical limits, deadline, device target, etc.]
-- ___________
-
----
-
-## Out of Scope (V1)
-[What are you NOT building in first version?]
-- ___________
-
----
-
-# ✅ EXAMPLE (Delete after reading)
-
-## App Name
-TaskFlow
-
-## Goal
-Simple daily task manager for personal use. No fluff, just tasks.
-
-## Platform
-Android
-
-## Core Features
-- Create task with title
-- Edit task
-- Mark task complete
-- Delete task
-
-## Login / Auth
-None
-
-## External Services
-None
-
-## Data Storage
-Local only (Room database)
-
-## Network Access Required?
-No
-
-## Done Means
-User can create a task, mark it complete, and see it saved after app restart — without crash.
-
-## Out of Scope (V1)
-- Notifications
-- Cloud sync
-- Multiple users
+TaskRemind Pro
+Platform
+Android only (minimum SDK 26)
+What It Does
+Daily task reminder app with floating overlay popup that appears over any screen even when app is closed. Exactly like Truecaller incoming call screen.
+Features
+Create, edit, delete tasks
+Set daily reminder time per task
+Global on/off toggle
+Floating overlay when reminder fires: shows task title + Done / Snooze 10min / Dismiss buttons, linear countdown progress bar (12s auto-dismiss)
+Settings screen: dark mode toggle, global enable/disable, permissions guide
+Settings persisted locally (dark mode, global toggle)
+Constraints
+Android only, no iOS
+100% offline, no internet
+No cloud, no Firebase, no backend
+Required Android Permissions
+SYSTEM_ALERT_WINDOW — overlay over other apps
+USE_FULL_SCREEN_INTENT — show overlay on lock screen
+FOREGROUND_SERVICE — keep reminder service alive
+FOREGROUND_SERVICE_SPECIAL_USE — required for overlay foreground service on Android 14+
+RECEIVE_BOOT_COMPLETED — reschedule alarms after reboot
+SCHEDULE_EXACT_ALARM / USE_EXACT_ALARM — fire reminder at exact time
+POST_NOTIFICATIONS — show notification on Android 13+
+Background Trigger Flow
+WorkManager schedules exact alarm for each task
+Alarm fires → WorkManager worker runs directly (not dependent on notification tap)
+Worker reads task from local DB → calls showOverlay() immediately
+Overlay appears automatically over any screen, even when app is closed
+Data Models
+Task: id, title, reminderTime, isEnabled
+Settings: isDarkMode, globalEnabled
+Done Means
+APK installs on Android phone
+Task creation works
+Reminder fires at set time
+Floating overlay appears automatically (no app open required)
+Done and Snooze buttons work
+Dark mode toggle works
+App survives reboot (reminders reschedule)
