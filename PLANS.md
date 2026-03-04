@@ -1,71 +1,58 @@
 # PLANS.md — Project Roadmap
-# ⚙️ Codex generates and updates this file. Do not edit manually.
-
----
 
 ## Status
-[ ] Not Started
-[ ] In Progress — Current: ___________
-[ ] Complete
-
----
+- [ ] Not Started
+- [x] In Progress — Current: V1 (Flutter rewrite)
+- [ ] Complete
 
 ## V1 — Core Working Feature
 
 ### Goal
-[Codex fills this based on SPEC.md]
+Deliver Flutter Android app with offline task CRUD, daily reminder scheduling, and overlay reminder actions.
 
 ### Acceptance Criteria
-- [ ] [Codex fills this]
-- [ ] [Codex fills this]
+- [x] Flutter/Dart-only implementation.
+- [x] Task create/edit/delete with daily time.
+- [x] Global toggle + dark mode persisted.
+- [x] Reminder callback attempts overlay with Done/Snooze/Dismiss + 12s countdown UI.
 
 ### Tasks
-- [ ] [Codex fills this]
-
-### Estimated Scope
-[Codex fills this]
-
----
+- [x] Remove Kotlin/Room/Compose implementation.
+- [x] Add Flutter dependencies and app scaffold.
+- [x] Implement offline storage + settings persistence.
+- [x] Implement reminder scheduling and overlay entry flow.
 
 ## V2 — Complete Feature Set
 
 ### Goal
-[Codex fills this]
+Production-hardening on-device behavior.
 
 ### Acceptance Criteria
-- [ ] [Codex fills this]
+- [ ] Validate overlay behavior across Android OEM variants.
+- [ ] Add richer tests for app state and storage.
+- [ ] Add permission status UX.
 
 ### Tasks
-- [ ] [Codex fills this]
-
----
+- [ ] Device matrix verification.
+- [ ] Expand test suite.
+- [ ] In-app permission state indicators.
 
 ## V3 — Production Ready
 
 ### Goal
-[Codex fills this]
+Release polish.
 
 ### Acceptance Criteria
-- [ ] [Codex fills this]
-- [ ] Build passes all checks
-- [ ] No known critical issues
-- [ ] Docs complete
+- [ ] Build/test fully green in CI/local.
+- [ ] Docs complete.
+- [ ] No critical known issues.
 
 ### Tasks
-- [ ] [Codex fills this]
-- [ ] Final verification loop
-- [ ] STATUS.md marked complete
-
----
+- [ ] Final verification loop.
+- [ ] Release checklist.
 
 ## Risks & Blockers
 | Risk | Impact | Mitigation |
 |------|--------|------------|
-| [Codex fills] | [High/Med/Low] | [Codex fills] |
-
----
-
-## Milestone History
-| Milestone | Completed On | Verified By |
-|-----------|-------------|-------------|
-| [Codex fills] | [date] | [build result] |
+| Flutter tooling unavailable in container | High | Verify via static review and document environment block |
+| Overlay plugin behavior requires Android manifest setup | Medium | Validate on Android device/emulator as next step |
