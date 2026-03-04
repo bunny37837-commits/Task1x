@@ -20,6 +20,10 @@ V3: [x] Not Started  [ ] In Progress  [ ] Complete
 ```
 
 ## Latest Update
+- Resolved branch conflict set for `.codex/skills/project/SKILL.md`, `.gitignore`, `DECISIONS.md`, `PLANS.md`, `README.md`, and `STATUS.md`.
+- Added explicit merge-safe conventions (`.gitignore` wrapper jar ignore + conflict marker check in `SKILL.md`).
+- Preserved offline Flutter app direction and prior architecture decisions.
+- Documented Gradle wrapper missing-JAR recovery command and validated regeneration path.
 
 ### What Was Done
 - Created Android app module and build setup for minSdk 26 / targetSdk 34.
