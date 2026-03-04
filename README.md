@@ -1,37 +1,25 @@
-# TaskRemind Pro (Flutter)
+# TaskRemind Pro
 
-Offline Android daily task reminder app built with Flutter + Dart.
+Offline Android daily task reminder app with exact alarms and floating overlay actions (Done / Snooze / Dismiss).
 
-## Features
-- Create, edit, delete tasks
-- Daily reminder per task
-- Global enable/disable reminders
-- Overlay popup actions: Done / Snooze 10m / Dismiss
-- 12s auto-dismiss progress
-- Persisted dark mode and global settings
+## Requirements
+- Android Studio Iguana+ recommended
+- Android SDK 34
+- Min SDK 26
 
-## Tech stack
-- Flutter (Material 3)
-- `sqflite` for local task storage
-- `shared_preferences` for settings
-- `android_alarm_manager_plus` for exact-style alarm callback scheduling
-- `flutter_overlay_window` for floating overlay rendering
-
-## Run
+## Build
 ```bash
-flutter pub get
-flutter run -d android
+./gradlew :app:assembleDebug
 ```
 
 ## Test
 ```bash
-flutter analyze
-flutter test
+./gradlew test
 ```
 
-## Merge/CI notes
-- `gradle/wrapper/gradle-wrapper.jar` is intentionally not tracked to avoid binary PR failures.
-- Regenerate the wrapper JAR locally with:
-  - `gradle wrapper --gradle-version 8.12 --no-validate-url`
-
-- If wrapper JAR is missing, regenerate it with `gradle wrapper --gradle-version 8.12 --no-validate-url`.
+## Architecture
+- Jetpack Compose UI
+- Room database for `Task` and `Settings`
+- AlarmManager exact alarms
+- WorkManager worker triggered by alarm receiver
+- Foreground overlay service for popup reminders
