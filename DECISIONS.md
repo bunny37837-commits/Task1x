@@ -1,75 +1,52 @@
 # DECISIONS.md — Technical Decisions Log
-# ⚙️ Codex updates this. Every major decision must be recorded here with reasoning.
-
----
-
-## Decision Log Format
-Each entry must follow this format:
-
-```
-## [DEC-001] Decision Title
-Date: YYYY-MM-DD
-Status: Decided / Reconsidered / Superseded
-
-Decision: [What was decided]
-Reason:   [Why this choice]
-Rejected: [What was NOT chosen and why]
-Impact:   [What this affects]
-```
-
----
 
 ## [DEC-001] Architecture Pattern
-Date: [Codex fills]
+Date: 2026-03-04
 Status: Decided
 
-Decision: [e.g., MVVM with Repository pattern]
-Reason:   [Codex fills]
-Rejected: [Codex fills]
-Impact:   [Codex fills]
-
----
+Decision: MVVM-style single-activity Compose app with repository layer.
+Reason: Keeps state handling simple while separating UI from persistence/scheduling concerns.
+Rejected: Multi-module architecture (too heavy for V1 scope).
+Impact: ViewModel coordinates Room data and scheduler actions.
 
 ## [DEC-002] Database / Storage
-Date: [Codex fills]
+Date: 2026-03-04
 Status: Decided
 
-Decision: [e.g., Room / SQLite / Firebase]
-Reason:   [Codex fills]
-Rejected: [Codex fills]
-Impact:   [Codex fills]
-
----
+Decision: Room database with `TaskEntity` and singleton `SettingsEntity`.
+Reason: Reliable local offline persistence, typed schema, coroutine Flow support.
+Rejected: SharedPreferences-only storage (weak schema, less suitable for list CRUD).
+Impact: App state survives process death and reboot scheduling can query all tasks.
 
 ## [DEC-003] Key Libraries / Dependencies
-Date: [Codex fills]
+Date: 2026-03-04
 Status: Decided
 
-Decision: [Codex fills]
-Reason:   [Codex fills]
-Impact:   [Codex fills]
-
----
+Decision: Jetpack Compose, Room, WorkManager, Coroutines.
+Reason: Native Android stack, stable support for offline local workflows.
+Impact: Modern UI and lifecycle-safe background execution.
 
 ## [DEC-004] Network Access
-Date: [Codex fills]
-Status: [Decided / Not Required]
+Date: 2026-03-04
+Status: Not Required
 
-Decision: [Network OFF / ON with reason]
-Allowed Domains: [if enabled]
-Reason:   [Codex fills]
-
----
+Decision: Network OFF.
+Allowed Domains: None.
+Reason: SPEC requires 100% offline operation and no backend/cloud.
 
 ## [DEC-005] Security Approach
-Date: [Codex fills]
+Date: 2026-03-04
 Status: Decided
 
-Decision: [Codex fills]
-Reason:   [Codex fills]
-Impact:   [Codex fills]
+Decision: Minimal-permission design with only Android reminder/overlay permissions from SPEC, and no credential handling.
+Reason: App has no login/backend and should avoid collecting sensitive data.
+Impact: Reduced attack surface and full offline behavior.
 
----
+## [DEC-006] Reminder Trigger Pipeline
+Date: 2026-03-04
+Status: Decided
 
-## Future Decisions
-[Codex adds new entries here as project progresses]
+Decision: AlarmManager exact alarm per task -> BroadcastReceiver -> OneTimeWorkRequest -> foreground OverlayService.
+Reason: Matches requirement for exact daily timing while using worker execution handoff and service-based overlay rendering.
+Rejected: Notification-tap dependent flow (does not satisfy auto popup requirement).
+Impact: Reminder overlay can fire when app UI is closed.
