@@ -13,103 +13,20 @@ const _overlayTaskIdKey = 'overlay_task_id';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const AppBootstrap());
-}
-
-class AppBootstrap extends StatefulWidget {
-  const AppBootstrap({super.key, this.loadAppState});
-
-  final Future<AppState> Function()? loadAppState;
-
-  @override
-  State<AppBootstrap> createState() => _AppBootstrapState();
-}
-
-class _AppBootstrapState extends State<AppBootstrap> {
-  late Future<AppState> _appStateFuture;
-
-  @override
-  void initState() {
-    super.initState();
-    _appStateFuture = _load();
-  }
-
-  Future<AppState> _load() {
-    if (widget.loadAppState != null) {
-      return widget.loadAppState!();
-    }
-    return _loadAppState();
-  }
-
-  Future<void> _retry() async {
-    setState(() {
-      _appStateFuture = _load();
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<AppState>(
-      future: _appStateFuture,
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return MaterialApp(
-            debugShowCheckedModeBanner: false,
-            home: Scaffold(
-              body: Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text('Failed to start app'),
-                      const SizedBox(height: 8),
-                      Text('${snapshot.error}'),
-                      const SizedBox(height: 12),
-                      FilledButton(
-                        onPressed: _retry,
-                        child: const Text('Retry'),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          );
-        }
-
-        if (!snapshot.hasData) {
-          return const MaterialApp(
-            debugShowCheckedModeBanner: false,
-            home: Scaffold(body: Center(child: CircularProgressIndicator())),
-          );
-        }
-
-        return ChangeNotifierProvider.value(
-          value: snapshot.data!,
-          child: const TaskRemindApp(),
-        );
-      },
-    );
-  }
-}
-
-Future<AppState> _loadAppState() async {
   await AndroidAlarmManager.initialize();
 
   final db = await AppDatabase.instance;
   final settings = await SettingsStore.instance;
   final appState = AppState(db, settings);
   await appState.load();
-  return appState;
+
+  runApp(ChangeNotifierProvider.value(value: appState, child: const TaskRemindApp()));
 }
 
 @pragma('vm:entry-point')
 void overlayMain() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(
-    const MaterialApp(debugShowCheckedModeBanner: false, home: OverlayScreen()),
-  );
+  runApp(const MaterialApp(debugShowCheckedModeBanner: false, home: OverlayScreen()));
 }
 
 @pragma('vm:entry-point')
@@ -186,13 +103,7 @@ class _OverlayScreenState extends State<OverlayScreen> {
   Future<void> _snooze() async {
     if (taskId != null) {
       final when = DateTime.now().add(const Duration(minutes: 10));
-      await AndroidAlarmManager.oneShotAt(
-        when,
-        taskId!,
-        alarmCallback,
-        exact: true,
-        wakeup: true,
-      );
+      await AndroidAlarmManager.oneShotAt(when, taskId!, alarmCallback, exact: true, wakeup: true);
     }
     await FlutterOverlayWindow.closeOverlay();
   }
@@ -213,37 +124,19 @@ class _OverlayScreenState extends State<OverlayScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              Text(title, style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
               const SizedBox(height: 12),
               LinearProgressIndicator(value: progress),
               const SizedBox(height: 12),
               Row(
                 children: [
-                  Expanded(
-                    child: FilledButton(
-                      onPressed: _done,
-                      child: const Text('Done'),
-                    ),
-                  ),
+                  Expanded(child: FilledButton(onPressed: _done, child: const Text('Done'))),
+                  const SizedBox(width: 8),
+                  Expanded(child: FilledButton(onPressed: _snooze, child: const Text('Snooze 10m'))),
                   const SizedBox(width: 8),
                   Expanded(
                     child: FilledButton(
-                      onPressed: _snooze,
-                      child: const Text('Snooze 10m'),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: FilledButton(
-                      onPressed: () async =>
-                          FlutterOverlayWindow.closeOverlay(),
+                      onPressed: () async => FlutterOverlayWindow.closeOverlay(),
                       child: const Text('Dismiss'),
                     ),
                   ),
@@ -277,15 +170,8 @@ class TaskRemindApp extends StatelessWidget {
   }
 }
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
-
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  final _editorKey = GlobalKey<_TaskEditorState>();
 
   @override
   Widget build(BuildContext context) {
@@ -308,7 +194,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const PermissionGuide(),
             const SizedBox(height: 8),
-            TaskEditor(key: _editorKey),
+            const TaskEditor(),
             const SizedBox(height: 8),
             Expanded(
               child: ListView.builder(
@@ -322,19 +208,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       trailing: Wrap(
                         spacing: 8,
                         children: [
-                          Switch(
-                            value: task.isEnabled,
-                            onChanged: (v) => state.toggleTask(task, v),
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.edit),
-                            onPressed: () =>
-                                _editorKey.currentState?.startEdit(task),
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.delete),
-                            onPressed: () => state.deleteTask(task.id!),
-                          ),
+                          Switch(value: task.isEnabled, onChanged: (v) => state.toggleTask(task, v)),
+                          IconButton(icon: const Icon(Icons.edit), onPressed: () => TaskEditorController.of(context).edit(task)),
+                          IconButton(icon: const Icon(Icons.delete), onPressed: () => state.deleteTask(task.id!)),
                         ],
                       ),
                     ),
@@ -357,9 +233,7 @@ class PermissionGuide extends StatelessWidget {
     return Card(
       child: ListTile(
         title: const Text('Permissions guide'),
-        subtitle: const Text(
-          'Allow overlay, exact alarms, notifications, and disable battery optimization.',
-        ),
+        subtitle: const Text('Allow overlay, exact alarms, notifications, and disable battery optimization.'),
         trailing: FilledButton(
           onPressed: () async => FlutterOverlayWindow.requestPermission(),
           child: const Text('Grant Overlay'),
@@ -367,6 +241,16 @@ class PermissionGuide extends StatelessWidget {
       ),
     );
   }
+}
+
+class TaskEditorController extends InheritedWidget {
+  const TaskEditorController({required this.edit, required super.child, super.key});
+  final void Function(Task task) edit;
+
+  static TaskEditorController of(BuildContext context) => context.dependOnInheritedWidgetOfExactType<TaskEditorController>()!;
+
+  @override
+  bool updateShouldNotify(covariant TaskEditorController oldWidget) => false;
 }
 
 class TaskEditor extends StatefulWidget {
@@ -381,14 +265,6 @@ class _TaskEditorState extends State<TaskEditor> {
   TimeOfDay _time = const TimeOfDay(hour: 9, minute: 0);
   Task? _editing;
 
-  void startEdit(Task task) {
-    setState(() {
-      _editing = task;
-      _titleController.text = task.title;
-      _time = TimeOfDay(hour: task.reminderHour, minute: task.reminderMinute);
-    });
-  }
-
   @override
   void dispose() {
     _titleController.dispose();
@@ -398,69 +274,70 @@ class _TaskEditorState extends State<TaskEditor> {
   @override
   Widget build(BuildContext context) {
     final state = context.read<AppState>();
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          children: [
-            TextField(
-              controller: _titleController,
-              decoration: const InputDecoration(labelText: 'Task title'),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Text('Time: ${_time.format(context)}'),
-                const Spacer(),
-                TextButton(
-                  onPressed: () async {
-                    final picked = await showTimePicker(
-                      context: context,
-                      initialTime: _time,
-                    );
-                    if (picked != null) setState(() => _time = picked);
-                  },
-                  child: const Text('Pick time'),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                FilledButton(
-                  onPressed: () async {
-                    final title = _titleController.text.trim();
-                    if (title.isEmpty) return;
-                    if (_editing == null) {
-                      await state.addTask(title, _time.hour, _time.minute);
-                    } else {
-                      await state.updateTask(
-                        _editing!.copyWith(
+    return TaskEditorController(
+      edit: (task) {
+        setState(() {
+          _editing = task;
+          _titleController.text = task.title;
+          _time = TimeOfDay(hour: task.reminderHour, minute: task.reminderMinute);
+        });
+      },
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            children: [
+              TextField(controller: _titleController, decoration: const InputDecoration(labelText: 'Task title')),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Text('Time: ${_time.format(context)}'),
+                  const Spacer(),
+                  TextButton(
+                    onPressed: () async {
+                      final picked = await showTimePicker(context: context, initialTime: _time);
+                      if (picked != null) setState(() => _time = picked);
+                    },
+                    child: const Text('Pick time'),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  FilledButton(
+                    onPressed: () async {
+                      final title = _titleController.text.trim();
+                      if (title.isEmpty) return;
+                      if (_editing == null) {
+                        await state.addTask(title, _time.hour, _time.minute);
+                      } else {
+                        await state.updateTask(_editing!.copyWith(
                           title: title,
                           reminderHour: _time.hour,
                           reminderMinute: _time.minute,
-                        ),
-                      );
-                    }
-                    setState(() {
-                      _editing = null;
-                      _titleController.clear();
-                    });
-                  },
-                  child: Text(_editing == null ? 'Add Task' : 'Save Task'),
-                ),
-                if (_editing != null) ...[
-                  const SizedBox(width: 8),
-                  OutlinedButton(
-                    onPressed: () => setState(() {
-                      _editing = null;
-                      _titleController.clear();
-                    }),
-                    child: const Text('Cancel'),
+                        ));
+                      }
+                      setState(() {
+                        _editing = null;
+                        _titleController.clear();
+                      });
+                    },
+                    child: Text(_editing == null ? 'Add Task' : 'Save Task'),
                   ),
+                  if (_editing != null) ...[
+                    const SizedBox(width: 8),
+                    OutlinedButton(
+                      onPressed: () => setState(() {
+                        _editing = null;
+                        _titleController.clear();
+                      }),
+                      child: const Text('Cancel'),
+                    ),
+                  ],
                 ],
-              ],
-            ),
-          ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -484,21 +361,8 @@ class AppState extends ChangeNotifier {
   }
 
   Future<void> addTask(String title, int hour, int minute) async {
-    final id = await _db.insertTask(
-      Task(
-        title: title,
-        reminderHour: hour,
-        reminderMinute: minute,
-        isEnabled: true,
-      ),
-    );
-    final task = Task(
-      id: id,
-      title: title,
-      reminderHour: hour,
-      reminderMinute: minute,
-      isEnabled: true,
-    );
+    final id = await _db.insertTask(Task(title: title, reminderHour: hour, reminderMinute: minute, isEnabled: true));
+    final task = Task(id: id, title: title, reminderHour: hour, reminderMinute: minute, isEnabled: true);
     tasks = [task, ...tasks];
     if (globalEnabled) await ReminderScheduler.scheduleTask(task);
     notifyListeners();
@@ -522,8 +386,7 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> toggleTask(Task task, bool enabled) async =>
-      updateTask(task.copyWith(isEnabled: enabled));
+  Future<void> toggleTask(Task task, bool enabled) async => updateTask(task.copyWith(isEnabled: enabled));
 
   Future<void> toggleDarkMode(bool enabled) async {
     darkMode = enabled;
@@ -534,11 +397,11 @@ class AppState extends ChangeNotifier {
   Future<void> toggleGlobal(bool enabled) async {
     globalEnabled = enabled;
     await _settings.setGlobalEnabled(enabled);
-    for (final task in tasks) {
-      if (enabled && task.isEnabled) {
-        await ReminderScheduler.scheduleTask(task);
-      } else if (task.id != null) {
-        await ReminderScheduler.cancelTask(task.id!);
+    for (final t in tasks) {
+      if (enabled && t.isEnabled) {
+        await ReminderScheduler.scheduleTask(t);
+      } else if (t.id != null) {
+        await ReminderScheduler.cancelTask(t.id!);
       }
     }
     notifyListeners();
@@ -549,36 +412,17 @@ class ReminderScheduler {
   static Future<void> scheduleTask(Task task) async {
     if (task.id == null) return;
     final now = DateTime.now();
-    var next = DateTime(
-      now.year,
-      now.month,
-      now.day,
-      task.reminderHour,
-      task.reminderMinute,
-    );
+    var next = DateTime(now.year, now.month, now.day, task.reminderHour, task.reminderMinute);
     if (!next.isAfter(now)) next = next.add(const Duration(days: 1));
 
-    await AndroidAlarmManager.oneShotAt(
-      next,
-      task.id!,
-      alarmCallback,
-      exact: true,
-      wakeup: true,
-      rescheduleOnReboot: true,
-    );
+    await AndroidAlarmManager.oneShotAt(next, task.id!, alarmCallback, exact: true, wakeup: true, rescheduleOnReboot: true);
   }
 
   static Future<void> cancelTask(int id) => AndroidAlarmManager.cancel(id);
 }
 
 class Task {
-  Task({
-    this.id,
-    required this.title,
-    required this.reminderHour,
-    required this.reminderMinute,
-    required this.isEnabled,
-  });
+  Task({this.id, required this.title, required this.reminderHour, required this.reminderMinute, required this.isEnabled});
 
   final int? id;
   final String title;
@@ -586,38 +430,31 @@ class Task {
   final int reminderMinute;
   final bool isEnabled;
 
-  String get timeLabel =>
-      '${reminderHour.toString().padLeft(2, '0')}:${reminderMinute.toString().padLeft(2, '0')}';
+  String get timeLabel => '${reminderHour.toString().padLeft(2, '0')}:${reminderMinute.toString().padLeft(2, '0')}';
 
-  Task copyWith({
-    int? id,
-    String? title,
-    int? reminderHour,
-    int? reminderMinute,
-    bool? isEnabled,
-  }) => Task(
-    id: id ?? this.id,
-    title: title ?? this.title,
-    reminderHour: reminderHour ?? this.reminderHour,
-    reminderMinute: reminderMinute ?? this.reminderMinute,
-    isEnabled: isEnabled ?? this.isEnabled,
-  );
+  Task copyWith({int? id, String? title, int? reminderHour, int? reminderMinute, bool? isEnabled}) => Task(
+        id: id ?? this.id,
+        title: title ?? this.title,
+        reminderHour: reminderHour ?? this.reminderHour,
+        reminderMinute: reminderMinute ?? this.reminderMinute,
+        isEnabled: isEnabled ?? this.isEnabled,
+      );
 
   Map<String, Object?> toMap() => {
-    'id': id,
-    'title': title,
-    'reminderHour': reminderHour,
-    'reminderMinute': reminderMinute,
-    'isEnabled': isEnabled ? 1 : 0,
-  };
+        'id': id,
+        'title': title,
+        'reminderHour': reminderHour,
+        'reminderMinute': reminderMinute,
+        'isEnabled': isEnabled ? 1 : 0,
+      };
 
   static Task fromMap(Map<String, Object?> m) => Task(
-    id: m['id'] as int,
-    title: m['title'] as String,
-    reminderHour: m['reminderHour'] as int,
-    reminderMinute: m['reminderMinute'] as int,
-    isEnabled: (m['isEnabled'] as int) == 1,
-  );
+        id: m['id'] as int,
+        title: m['title'] as String,
+        reminderHour: m['reminderHour'] as int,
+        reminderMinute: m['reminderMinute'] as int,
+        isEnabled: (m['isEnabled'] as int) == 1,
+      );
 }
 
 class AppDatabase {
@@ -650,46 +487,27 @@ class AppDatabase {
   }
 
   Future<Task?> getTask(int id) async {
-    final rows = await _db.query(
-      'tasks',
-      where: 'id = ?',
-      whereArgs: [id],
-      limit: 1,
-    );
+    final rows = await _db.query('tasks', where: 'id = ?', whereArgs: [id], limit: 1);
     if (rows.isEmpty) return null;
     return Task.fromMap(rows.first);
   }
 
-  Future<int> insertTask(Task task) =>
-      _db.insert('tasks', task.toMap()..remove('id'));
-
-  Future<void> updateTask(Task task) async {
-    await _db.update(
-      'tasks',
-      task.toMap(),
-      where: 'id = ?',
-      whereArgs: [task.id],
-    );
-  }
-
-  Future<void> deleteTask(int id) async {
-    await _db.delete('tasks', where: 'id = ?', whereArgs: [id]);
-  }
+  Future<int> insertTask(Task task) => _db.insert('tasks', task.toMap()..remove('id'));
+  Future<void> updateTask(Task task) async => _db.update('tasks', task.toMap(), where: 'id = ?', whereArgs: [task.id]);
+  Future<void> deleteTask(int id) async => _db.delete('tasks', where: 'id = ?', whereArgs: [id]);
 }
 
 class SettingsStore {
   SettingsStore._(this._prefs);
   final SharedPreferences _prefs;
 
-  static Future<SettingsStore> get instance async =>
-      SettingsStore._(await SharedPreferences.getInstance());
+  static Future<SettingsStore> get instance async => SettingsStore._(await SharedPreferences.getInstance());
 
   bool get darkMode => _prefs.getBool('isDarkMode') ?? false;
   bool get globalEnabled => _prefs.getBool('globalEnabled') ?? true;
 
   Future<void> setDarkMode(bool value) => _prefs.setBool('isDarkMode', value);
-  Future<void> setGlobalEnabled(bool value) =>
-      _prefs.setBool('globalEnabled', value);
+  Future<void> setGlobalEnabled(bool value) => _prefs.setBool('globalEnabled', value);
 
   Future<void> cacheOverlayData(int taskId, String title) async {
     await _prefs.setInt(_overlayTaskIdKey, taskId);

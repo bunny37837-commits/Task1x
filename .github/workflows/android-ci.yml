@@ -71,10 +71,8 @@ jobs:
           sdk.dir=$ANDROID_HOME
           EOF
 
-      - name: Build debug APK
-        run: |
-          cd android
-          gradle :app:assembleDebug --stacktrace
+      - name: Build debug APK (Gradle wrapper)
+        run: ./gradlew :app:assembleDebug --stacktrace
 
       - name: Upload debug APK artifact
         uses: actions/upload-artifact@v4

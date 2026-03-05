@@ -1,25 +1,10 @@
-.dart_tool/
-.packages
-.pub/
-build/
-.flutter-plugins
-.flutter-plugins-dependencies
-.metadata
-.idea/
-*.iml
-
-# Merge leftovers
-*.orig
-
 .gradle/
-.kotlin/
-
-# Avoid binary launcher assets in PRs
-android/app/src/main/res/mipmap-*/ic_launcher.png
-
-
-
-# Keep Gradle wrapper files tracked
-!gradle/wrapper/gradle-wrapper.properties
-!gradlew
-!gradlew.bat
+/local.properties
+/.idea/
+.DS_Store
+/build/
+/captures/
+.externalNativeBuild/
+.cxx/
+*.iml
+app/build/

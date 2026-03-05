@@ -1,11 +1,13 @@
-# Gradle Wrapper policy
+# Gradle Wrapper JAR bootstrap note
 
-Gradle wrapper JAR omitted due to Codex binary limitation. CI reliably bootstraps via `gradle/actions/setup-gradle@v5`. Local devs can run `gradle wrapper` once if they want the full JAR.
+This repository intentionally does **not** commit `gradle-wrapper.jar` to avoid PR systems that reject binary files.
 
-Repository-tracked wrapper files:
-- `gradlew`
-- `gradlew.bat`
-- `gradle/wrapper/gradle-wrapper.properties`
+To regenerate the JAR locally, run:
 
-Pinned distribution:
-- Gradle `9.4.0`
+```bash
+gradle wrapper --gradle-version 8.12 --no-validate-url
+```
+
+This command recreates:
+- `gradle/wrapper/gradle-wrapper.jar`
+- wrapper scripts/properties if missing
