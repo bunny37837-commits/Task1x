@@ -32,9 +32,7 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      # Pin Gradle to satisfy "Minimum supported Gradle version is 8.13"
-      # and avoid relying on whatever Gradle happens to be on the runner.
-      - name: Set up Gradle (8.13)
+      - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v5
         with:
           gradle-version: 8.13
@@ -53,11 +51,8 @@ jobs:
           yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses
           "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" \
             "platform-tools" \
-            "platforms;android-36" \
             "platforms;android-34" \
-            "build-tools;36.0.0" \
-            "ndk;28.2.13676358" \
-            "cmake;3.22.1"
+            "build-tools;34.0.0"
 
       - name: Resolve dependencies
         run: flutter pub get
@@ -68,19 +63,21 @@ jobs:
       - name: Tests
         run: flutter test
 
-      # IMPORTANT: local.properties must be inside android/
-      - name: Create android/local.properties for Flutter/Android Gradle
+      - name: Create android/local.properties
         run: |
           cat > android/local.properties <<EOF
           flutter.sdk=$FLUTTER_ROOT
           sdk.dir=$ANDROID_HOME
           EOF
 
+      # IMPORTANT: Build using Gradle directly (not gradlew)
       - name: Build debug APK
-        run: flutter build apk --debug
+        run: |
+          cd android
+          gradle :app:assembleDebug --stacktrace
 
       - name: Upload debug APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: app-debug-apk
-          path: build/app/outputs/flutter-apk/app-debug.apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
