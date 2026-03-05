@@ -62,8 +62,20 @@ jobs:
           cd android
           gradle :app:assembleDebug --stacktrace
 
+      # This will show you the exact path(s) of any APK produced
+      - name: Locate APK files
+        run: |
+          echo "=== APK files found in workspace ==="
+          find . -type f -name "*.apk" -print || true
+          echo "=== AAB files found in workspace ==="
+          find . -type f -name "*.aab" -print || true
+
+      # Upload from multiple likely locations (Flutter + Gradle + intermediates)
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
         with:
           name: TaskRemindPro-Debug-APK
-          path: android/app/build/outputs/apk/debug
+          path: |
+            build/app/outputs/flutter-apk/*.apk
+            android/app/build/outputs/**/*.apk
+            android/app/build/intermediates/**/*.apk
