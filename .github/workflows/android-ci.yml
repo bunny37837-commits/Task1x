@@ -32,8 +32,12 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Set up Gradle cache
+      # Pin Gradle to satisfy "Minimum supported Gradle version is 8.13"
+      # and avoid relying on whatever Gradle happens to be on the runner.
+      - name: Set up Gradle (8.13)
         uses: gradle/actions/setup-gradle@v5
+        with:
+          gradle-version: 8.13
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -64,9 +68,10 @@ jobs:
       - name: Tests
         run: flutter test
 
-      - name: Create local.properties for Flutter/Android Gradle
+      # IMPORTANT: local.properties must be inside android/
+      - name: Create android/local.properties for Flutter/Android Gradle
         run: |
-          cat > local.properties <<EOF
+          cat > android/local.properties <<EOF
           flutter.sdk=$FLUTTER_ROOT
           sdk.dir=$ANDROID_HOME
           EOF
@@ -78,4 +83,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: app-debug-apk
-          path: build/app/outputs/flutter-apk/app-debug.apk   # ← THIS IS THE ONLY CHANGE NEEDED
+          path: build/app/outputs/flutter-apk/app-debug.apk
