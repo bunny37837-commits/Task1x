@@ -1,71 +1,20 @@
 # PLANS.md — Project Roadmap
-# ⚙️ Codex generates and updates this file. Do not edit manually.
 
----
+## V1 — Core working feature
+- [x] Flutter + Dart only implementation
+- [x] Task create/edit/delete with daily reminder time
+- [x] Global enable toggle + dark mode persistence
+- [x] Overlay reminder UI (Done / Snooze 10m / Dismiss + 12s auto-dismiss)
+- [x] Android platform project/permissions generated
+- [x] Release APK produced
+- [x] CI workflow added with Java/Gradle best-practice actions
 
-## Status
-[ ] Not Started
-[ ] In Progress — Current: ___________
-[ ] Complete
+## V2 — Complete feature set
+- [ ] Validate all reminder/overlay behavior on real Android device(s)
+- [ ] Improve permission state UX and guided recovery
+- [ ] Add regression tests for scheduler/state flows
 
----
-
-## V1 — Core Working Feature
-
-### Goal
-[Codex fills this based on SPEC.md]
-
-### Acceptance Criteria
-- [ ] [Codex fills this]
-- [ ] [Codex fills this]
-
-### Tasks
-- [ ] [Codex fills this]
-
-### Estimated Scope
-[Codex fills this]
-
----
-
-## V2 — Complete Feature Set
-
-### Goal
-[Codex fills this]
-
-### Acceptance Criteria
-- [ ] [Codex fills this]
-
-### Tasks
-- [ ] [Codex fills this]
-
----
-
-## V3 — Production Ready
-
-### Goal
-[Codex fills this]
-
-### Acceptance Criteria
-- [ ] [Codex fills this]
-- [ ] Build passes all checks
-- [ ] No known critical issues
-- [ ] Docs complete
-
-### Tasks
-- [ ] [Codex fills this]
-- [ ] Final verification loop
-- [ ] STATUS.md marked complete
-
----
-
-## Risks & Blockers
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| [Codex fills] | [High/Med/Low] | [Codex fills] |
-
----
-
-## Milestone History
-| Milestone | Completed On | Verified By |
-|-----------|-------------|-------------|
-| [Codex fills] | [date] | [build result] |
+## V3 — Production ready
+- [ ] Add production signing pipeline/keystore handling
+- [ ] CI automation for analyze/test/build
+- [ ] Release checklist and store-readiness docs
