@@ -38,3 +38,7 @@ Floating overlay appears automatically (no app open required)
 Done and Snooze buttons work
 Dark mode toggle works
 App survives reboot (reminders reschedule)
+
+
+Build Tooling Network Note
+Temporary internet access is allowed only for local toolchain bootstrap (Flutter SDK and Android SDK packages). App runtime remains fully offline.
